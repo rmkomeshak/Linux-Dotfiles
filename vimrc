@@ -1,58 +1,62 @@
-set nocompatible
-filetype off
-syntax on
-set number
-set tabstop=3
-set shiftwidth=3
-set expandtab
+" =========================
+" vim
+" =========================
 
-set incsearch
-set hlsearch
+set nocompatible 			  				" idk what this does
+filetype off 				  				" filetype detection; unsure why I set this to off originally but leaving as is.
+syntax enable 				  				" syntax highlighting
+set encoding=utf-8        				" also can't remember why I set this, I think it was for one of the visual plugins (vim-buffet maybe?)
+set number relativenumber 				" relative line numbers
+set cursorline 			  				" cursor line highlighting
+set background=dark     				" setting to dark mode explicitly; had issues with alacritty thinking it's in light mode
+set termguicolors 						" better colors
+"hi Normal guibg=NONE ctermbg=NONE
+set tabstop=3 								" 3 space tabs
+set shiftwidth=3 							" 3 spaces for each indentation
+set expandtab 								" expands tabs as spaces
+set autoindent 							" lines inherit the indention of the previous line
+set shiftround 							" rounds indents to a multiple of shiftwidth
+set hlsearch 								" search highlighting
+set laststatus=2 							" always show status bar (is this needed?) 
+set foldmethod=indent 					" fold based on indentation levels
+set nofoldenable 							" disable fold by default
+set confirm                         " confirmation message if you try to close an unsaved buffer
+set hidden                          " allows moving between unsaved buffers 
 
-set termwinsize=12x0
-set splitbelow
-set mouse=a
-set signcolumn=yes
-set rtp+=~/.vim/bundle/Vundle.vim
+" For vim-buffet; must be before the plugin loads.
+function! g:BuffetSetCustomColors()
+   hi! BuffetCurrentBuffer cterm=NONE ctermbg=5 ctermfg=8 guibg=#F7F7F7 guifg=#000000 " current buffer colors 
+   hi! BuffetActiveBuffer cterm=NONE ctermbg=5 ctermfg=8 guibg=#FCD8CA guifg=#000000 " current buffer colors when not 'active' (e.g. when navigating NERDTree)
+   hi! BuffetTab cterm=NONE ctermbg=5 ctermfg=8 guibg=#70A9FA guifg=#000000 " the little tab in the upper left 
+endfunction
 
-" Plugins
-call vundle#begin('~/.vim/plugged')
+" ==========================
+" plugins
+" ==========================
 
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'ycm-core/YouCompleteMe'
-Plugin 'bfrg/vim-cpp-modern'
-Plugin 'jiangmiao/auto-pairs'
-Plugin 'preservim/nerdtree'
-Plugin 'preservim/tagbar'
-Plugin 'sainnhe/everforest'
-Plugin 'dyng/ctrlsf.vim'
-Plugin 'tpope/vim-dispatch'
+call plug#begin()
 
-call vundle#end()
+Plug 'jacoborus/tender.vim'
+Plug 'sainnhe/everforest'
+Plug 'rust-lang/rust.vim'
+Plug 'preservim/tagbar'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
+Plug 'preservim/nerdtree'
+Plug 'ryanoasis/vim-devicons'
+Plug 'bagrat/vim-buffet'
+Plug 'puremourning/vimspector'
+Plug 'semanticart/tag-peek.vim' " only works in nvim... need to find alternative or fork tag-peek.
 
-" autopairs configuration
-let g:AutoPairsShortcutToggle = '<C-P>'
+call plug#end()
 
-" youcompleteme configuration
-let g:ycm_key_list_stop_completion = ['<C-x>'] " Mapping to close the completion menu (default <C-y>)
-let g:ycm_filetype_whitelist = { 'cpp':1, 'h':2, 'hpp':3, 'c':4, 'cxx':5 } " Set filetypes where YCM will be turned on
-let g:ycm_autoclose_preview_window_after_insertion = 1 " Close preview window after completing the insertion
-let g:ycm_autoclose_preview_window_after_completion = 1
+colorscheme everforest
+hi CocMenuSel guibg=#13354A " Sets color of highlighted option in CocMenu
 
-let g:ycm_confirm_extra_conf = 0                 " Don't confirm python conf
-let g:ycm_always_populate_location_list = 1      " Always populate diagnostics list
-let g:ycm_enable_diagnostic_signs = 1            " Enable line highligting diagnostics
-let g:ycm_open_loclist_on_ycm_diags = 1          " Open location list to view diagnostics
-let g:ycm_max_num_candidates = 20                " Max number of completion suggestions 
-let g:ycm_max_num_identifier_candidates = 10     " Max number of identifier-based suggestions
-let g:ycm_auto_trigger = 1                       " Enable completion menu
-let g:ycm_show_diagnostic_ui = 1                 " Show diagnostic display features
-let g:ycm_error_symbol = '>>'                    " The error symbol in Vim gutter
-let g:ycm_enable_diagnostic_signs = 1            " Display icons in Vim's gutter, error, warnings
-let g:ycm_enable_diagnostic_highlighting = 1     " Highlight regions of diagnostic text
-let g:ycm_echo_current_diagnostic = 1            " Echo line's diagnostic that cursor is on
+" ==========================
+" nerdtree
+" ==========================
 
-" nerdtree configuration
 let NERDTreeShowBookmarks = 1   " Show the bookmarks table
 let NERDTreeShowHidden = 1      " Show hidden files
 let NERDTreeShowLineNumbers = 0 " Hide line numbers
@@ -60,71 +64,214 @@ let NERDTreeMinimalMenu = 1     " Use the minimal menu (m)
 let NERDTreeWinPos = "left"     " Panel opens on the left side
 let NERDTreeWinSize = 31        " Set panel width to 31 columns
 
-" tagbar configuration
-let g:tagbar_autofocus = 1
-let g:tagbar_autoshowtag = 1
-let g:tagbar_position = 'botright vertical'
-
-" ctrlsf configuration
-let g:ctrlsf_backend = 'ack' " Use the ack tool as the backend
-let g:ctrlsf_auto_close = { "normal":0, "compact":0 } " Auto close the results panel when opening a file
-let g:ctrlsf_auto_focus = { "at":"start" } " Immediately switch focus to the search window
-let g:ctrlsf_auto_preview = 0 " Don't open the preview window automatically
-let g:ctrlsf_case_sensitive = 'smart' " Use the smart case sensitivity search scheme
-let g:ctrlsf_default_view = 'normal' " Normal mode, not compact mode
-let g:ctrlsf_regex_pattern = 0 " Use absoulte search by default
-let g:ctrlsf_position = 'right' " Position of the search window
-let g:ctrlsf_winsize = '46' " Width or height of search window
-let g:ctrlsf_default_root = 'cwd' " Search from the current working directory
-
-" color scheme
-set background=dark
-colorscheme everforest
-
-" Mapping
 nmap <F2> :NERDTreeToggle<CR>
-nmap <F8> :TagbarToggle<CR>
-nmap <C-F> <Plug>CtrlSFPrompt
-xmap <C-F>f <Plug>CtrlSFVwordPath
-xmap <C-F>F <Plug>CtrlSFVwordExec
-nmap <C-F>n <Plug>CtrlSFCwordPath
-nnoremap <C-F>o :CtrlSFOpen<CR>
-nnoremap <C-F>t :CtrlSFToggle<CR>
-inoremap <C-F>t <Esc>:CtrlSFToggle<CR>
 
-" Open vim-dispatch window and scroll to bottom
-nnoremap    <C-m>m    :Copen<CR> <bar> G
+" ==========================
+" tagbar
+" ==========================
 
-" Build debug and release targets
-nnoremap <C-m>bd   :Dispatch! make -C build/Debug<CR>
-nnoremap <C-m>br   :Dispatch! make -C build/Release<CR>
+nmap <F1> :TagbarToggle<CR> 
 
-" Temporary... change to be more dynamic in the future
-nnoremap <F6> :Start ~/Repositories/TextEditor/bin/Debug/TextEditor <CR>
+" ==========================
+" vimspector
+" ==========================
 
-function SetBinaryDebug(filename)
-      let bpath = getcwd() . "/bin/Debug/" . a:filename
-      execute "nnoremap <F6> :Start "
-         \ bpath
-         \ . " <CR> <bar> :Copen<CR>"
-      echo "<F6> will run: " . bpath
+" See vim-notes for VISUAL_STUDIO bindings.
+let g:vimspector_enable_mappings = "VISUAL_STUDIO"
+
+" =========================
+" vim-buffet
+" =========================
+
+" These settings are from the readme; need powerline, font-awesome, and
+" vim-devicons for display purposes
+let g:buffet_powerline_separators = 1
+let g:buffet_tab_icon = "\uf00a"
+let g:buffet_left_trunc_icon = "\uf0a8"
+let g:buffet_right_trunc_icon = "\uf0a9"
+
+" Move back and forth between tabline
+noremap <Tab> :bn<CR>
+noremap <S-Tab> :bp<CR>
+noremap <Leader><Tab> :Bw<CR>
+noremap <Leader><S-Tab> :Bw!<CR>
+noremap <C-t> :tabnew split<CR>
+
+" =========================
+" rust.vim
+" =========================
+
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
+
+
+" =========================
+" tag-peek.vim
+" =========================
+
+nnoremap <leader>q :call tag_peek#ShowTag()<CR>
+
+" =========================
+" coc.nvim 
+" =========================
+
+" TODO: Review/clean up coc.nvim section. Most of this is copied from the
+" internet
+
+" Having longer updatetime (default is 4000 ms = 4s) leads to noticeable
+" delays and poor user experience
+set updatetime=300
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-function SetBinary(filename)
-      let bpath = getcwd() . "/bin/Debug/" . a:filename
-      execute "nnoremap <F6> :Copen <CR> <bar> :Start "
-         \ bpath
-         \ . " <CR>"
-      echo "<F6> will run: " . bpath
+" Use <c-space> to trigger completion
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+nmap <silent><nowait> [g <Plug>(coc-diagnostic-prev)
+nmap <silent><nowait> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation
+nmap <silent><nowait> gd <Plug>(coc-definition)
+nmap <silent><nowait> gy <Plug>(coc-type-definition)
+nmap <silent><nowait> gi <Plug>(coc-implementation)
+nmap <silent><nowait> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
 endfunction
 
-function SetBinaryRelease(filename)
-      let bpath = getcwd() . "/bin/Release/" . a:filename
-      execute "nnoremap <F7> :Dispatch "
-         \ bpath
-         \ . " <CR> <bar> :Copen<CR>"
-      echo "<F7> will run: " . bpath
-endfunction
+" Highlight the symbol and its references when holding the cursor
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
+" Symbol renaming
+nmap <leader>rn <Plug>(coc-rename)
 
-filetype plugin indent on
+" Formatting selected code
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s)
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+augroup end
+
+" Applying code actions to the selected code block
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying code actions at the cursor position
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+" Remap keys for apply code actions affect whole buffer
+nmap <leader>as  <Plug>(coc-codeaction-source)
+" Apply the most preferred quickfix action to fix diagnostic on the current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Remap keys for applying refactor code actions
+nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+
+" Run the Code Lens action on the current line
+nmap <leader>cl  <Plug>(coc-codelens-action)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Use CTRL-S for selections ranges
+" Requires 'textDocument/selectionRange' support of language server
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Fold` command to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Mappings for CoCList
+" Show all diagnostics
+nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item
+nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item
+nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
